@@ -52,9 +52,13 @@ class CallState:
 
     def record(self) -> dict:
         """The call's outcome; a call that never got one is 'incomplete'."""
-        return self.outcome or incomplete_outcome(
-            self.borrower, self.verified, self.payment_link_sent, self.call_id, self.end_reason
-        )
+        if self.outcome is None:
+            return incomplete_outcome(
+                self.borrower, self.verified, self.payment_link_sent, self.call_id, self.end_reason
+            )
+        # The model often calls send_payment_link and record_outcome in parallel, so the
+        # record was taken before the link finished. Facts come from the call, at the end.
+        return {**self.outcome, "payment_link_sent": self.payment_link_sent}
 
     def finalize(self) -> dict:
         """Save (to outcomes.jsonl, shown on the call page) and return the outcome."""
@@ -146,7 +150,11 @@ class LumenAgent(Agent):
         if s.payment_link_sent:
             return "Already sent earlier in this call. Tell them it's on their phone."
         try:
-            async with ctx.with_filler(FILLER[self._caller_language()], delay=1.2, max_steps=1):
+            # F17: the filler is spoken but kept out of the chat history; otherwise the
+            # model answered its own filler ("No problem, take your time").
+            line = FILLER[self._caller_language()]
+            filler = lambda _step: ctx.session.say(line, add_to_chat_ctx=False)  # noqa: E731
+            async with ctx.with_filler(filler, delay=1.2, max_steps=1):
                 await create_payment_link(s.borrower, s.borrower.emi_amount)
         except PaymentLinkError:
             return (
@@ -202,6 +210,7 @@ class LumenAgent(Agent):
             )
         except OutcomeError as e:
             return f"Not recorded: {e}"
+        s.outcome["recorded_by"] = "agent"
         # F9: "Say a goodbye" here made the agent say a second one after its first.
         return "Recorded. If you haven't said goodbye yet, say one short warm line; then call end_call."
 

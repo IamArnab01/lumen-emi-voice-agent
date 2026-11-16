@@ -24,7 +24,8 @@ check() {
   py -m lumen.data | tail -1
   py -m lumen.tools
   py -m lumen.assistant
-  py -c "import agent, lumen.smoke, evals.voice_bot; print('agent imports ok')"
+  py -m lumen.prompts
+  py -c "import agent, lumen.smoke, lumen.postcall, evals.run, evals.voice_bot; print('agent imports ok')"
 }
 
 # Starts a worker on the given pipeline, phones it with the voice bot, stops the worker.

@@ -25,12 +25,14 @@ from livekit.agents.voice.run_result import ChatMessageEvent, FunctionCallEvent,
 from lumen.assistant import CallState, LumenAgent
 from lumen.data import load_borrowers, today
 from lumen.pipelines import cascade_llm
+from lumen.postcall import derive_outcome
 
 HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "results"
 SIM_MODEL = os.environ.get("SIM_MODEL", "openai/gpt-4.1-mini")
 MAX_TURNS = 14
-PARALLEL = 4
+# LiveKit Inference allows ~100 LLM requests/min per project; 4 parallel calls hit it (baseline).
+PARALLEL = 2
 
 SIM_PROMPT = """You are role-playing a borrower who just picked up a phone call from Lumen Finance.
 Persona: {persona}
@@ -78,6 +80,7 @@ async def run_once(scn: dict, n: int, out_dir: Path) -> dict:
             conn_options=SessionConnectOptions(llm_conn_options=APIConnectOptions(max_retry=4, retry_interval=3.0)),
         ) as session:
             await session.start(LumenAgent(state))
+            agent_session = session
             for _ in range(MAX_TURNS):
                 events.append({"role": "borrower", "text": line})
                 started = time.perf_counter()
@@ -103,6 +106,11 @@ async def run_once(scn: dict, n: int, out_dir: Path) -> dict:
                 sim_ctx.add_message(role="assistant", content=line)
     except Exception as e:  # a crashed run is a result, not a reason to stop the suite
         error = f"{type(e).__name__}: {e}"
+    if state.outcome is None and not error:
+        try:
+            await derive_outcome(state, agent_session.history.items)
+        except Exception as e:
+            error = f"post-call: {type(e).__name__}: {e}"
 
     run = {
         "scenario": scn["id"],

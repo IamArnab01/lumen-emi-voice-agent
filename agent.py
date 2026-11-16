@@ -22,6 +22,7 @@ from lumen.assistant import CallState, LumenAgent  # noqa: E402
 from lumen.data import load_borrowers, today  # noqa: E402
 from lumen.guards import CallGuards  # noqa: E402
 from lumen.pipelines import build_session, load_vad, selected  # noqa: E402
+from lumen.postcall import derive_outcome  # noqa: E402
 from lumen.timing import log_turn_latency  # noqa: E402
 
 logger = logging.getLogger("lumen")
@@ -64,6 +65,10 @@ async def call(ctx: JobContext) -> None:
     log_turn_latency(session, state.call_id, pipeline)
 
     async def on_shutdown() -> None:
+        try:
+            await derive_outcome(state, session.history.items)  # caller hung up first
+        except Exception:
+            logger.exception("post-call outcome failed; saving as incomplete")
         record = state.finalize()
         CALLS_DIR.mkdir(parents=True, exist_ok=True)
         (CALLS_DIR / f"{state.call_id}.json").write_text(

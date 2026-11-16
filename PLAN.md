@@ -48,7 +48,7 @@ README.md
 
 ## Phase 0: Scaffold & mock data (no keys needed)
 - uv project; deps: `livekit-agents[ultravox,groq,sarvam,silero,turn-detector]`, `python-dotenv`, `num2words`, `pyyaml`.
-- `.env.example`: `LIVEKIT_URL/API_KEY/API_SECRET`, `ULTRAVOX_API_KEY`, `GROQ_API_KEY`, `SARVAM_API_KEY`, `JUDGE_API_KEY` (optional), `PIPELINE=ultravox`, `FAIL_PAYMENT_LINK=0`, `TODAY=` (pin the date for reproducible evals).
+- `.env.example`: `LIVEKIT_URL/API_KEY/API_SECRET`, `ULTRAVOX_API_KEY`, `GROQ_API_KEY`, `SARVAM_API_KEY`, `PIPELINE=ultravox`, `FAIL_PAYMENT_LINK=0`, `TODAY=` (pin the date for reproducible evals).
 - `data/borrowers.json`, 8 borrowers covering the cases:
 
 | id | profile | purpose |
@@ -117,7 +117,7 @@ Listen to 15+ real calls. Fix in this order:
 - `simulator.py`: a Groq LLM plays the borrower from persona + beats; stays in character; sends `[HANGUP]` when done.
 - `run.py`: each scenario × **N=3** (configurable), text mode against the real agent classes and tools; saves full transcripts + tool calls + outcome to `results/<run_id>/`.
 - `checks.py` (rules, high trust): verification before disclosure (amount/date tokens in agent turns before verify succeeds) · outcome-field accuracy · promise-date exact match · escalation correctness · threat/waiver phrase list · turns to outcome · outcome recorded at all.
-- `judge.py` (LLM, medium trust): tone/empathy 1–5 rubric + "did it stay on topic" + "pressure or shaming". Use a different model from the agent where possible.
+- `score.py` judge (LLM, medium trust): tone/empathy 1–5 rubric + "did it stay on topic" + "pressure or shaming". A different model from the agent.
 - **Judge calibration:** label ~10 transcripts by hand and report agreement with the judge.
 - `report.py`: per-scenario pass rate across runs (flakiness shown), per-metric aggregates → `results/summary.md`.
 
@@ -158,4 +158,3 @@ Listen to 15+ real calls. Fix in this order:
 | `LIVEKIT_*` | P2 |
 | `ULTRAVOX_API_KEY` | P2 |
 | `SARVAM_API_KEY` | P2 (cascade) |
-| `JUDGE_API_KEY` (OpenAI/Anthropic, optional) | P4 |
