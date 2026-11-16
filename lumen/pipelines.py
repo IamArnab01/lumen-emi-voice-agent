@@ -117,7 +117,9 @@ def _cascade(state: CallState, vad: silero.VAD) -> AgentSession:
             # "my date of birth is... uh..." instead of cutting in at the first pause.
             "turn_detection": inference.TurnDetector(),
             # min_delay applies when the detector is confident the turn is over (was 0.4).
-            "endpointing": {"min_delay": 0.25, "max_delay": 2.5},
+            # max_delay caps the wait when the detector thinks the caller isn't done
+            # (was 2.5: the voice bot hit it twice on mid-sentence pauses).
+            "endpointing": {"min_delay": 0.25, "max_delay": 1.5},
             "interruption": {
                 "enabled": True,
                 # Stop after 0.3 s of caller speech (was 0.5: the voice bot measured the

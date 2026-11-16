@@ -167,7 +167,7 @@ class LumenAgent(Agent):
 
         Args:
             outcome: One of will_pay_on_time, already_paid, promise_to_pay, hardship, dispute, wrong_number, third_party, callback_requested, stop_requested, verification_failed.
-            promise_to_pay_date: The date they said they'll pay, as YYYY-MM-DD, whenever they named one (also for will_pay_on_time).
+            promise_to_pay_date: The day the caller said they'll pay, as YYYY-MM-DD, whenever they named one (even if it's the due date). Empty if they named no day: don't fill it in for them.
             escalate_to_human: True if a person from the team must follow up (dispute, hardship, they asked for a person).
             notes: One short factual line: what they said, callback time, what they dispute.
             language: Language the call ended in: en-IN or hi-IN.
