@@ -42,6 +42,20 @@ voicebot() {
   py -m evals.voice_bot --pipeline "$pipeline" --script "$script"
 }
 
+# The demo: agent worker + the admin call page, one command; Ctrl+C stops both.
+app() {
+  mkdir -p logs
+  pkill -f "python agent.py start" 2>/dev/null && sleep 1
+  py agent.py start >logs/worker.log 2>&1 &
+  WORKER_PID=$!
+  trap 'kill "$WORKER_PID" 2>/dev/null; wait "$WORKER_PID" 2>/dev/null' EXIT
+  trap 'exit 130' INT TERM
+  for _ in $(seq 60); do grep -q "registered worker" logs/worker.log && break; sleep 0.5; done
+  grep -q "registered worker" logs/worker.log || { echo "worker did not register; see logs/worker.log"; return 1; }
+  echo "agent worker ready (PIPELINE=$(grep -m1 '^PIPELINE=' .env | cut -d= -f2)); logs in logs/worker.log"
+  py web/server.py
+}
+
 case "${1:-help}" in
   setup) setup ;;
   check) check ;;
@@ -50,10 +64,12 @@ case "${1:-help}" in
   console) [ -n "${2:-}" ] && export BORROWER="$2"; py agent.py console ;;
   agent) [ -n "${2:-}" ] && export BORROWER="$2"; py agent.py start ;;
   dev) [ -n "${2:-}" ] && export BORROWER="$2"; py agent.py dev ;;
+  app) app ;;
   voicebot) voicebot "${2:-ultravox}" "${3:-happy}" ;;
   shell) exec bash --rcfile <(echo "source ~/.bashrc 2>/dev/null; source $VENV/bin/activate; cd $ROOT") -i ;;
   *)
     echo "usage: start.ps1 <command>"
+    echo "  app     THE DEMO: agent + call page on http://localhost:8090 (Ctrl+C stops both)"
     echo "  setup   create/update the WSL venv, install requirements, create .env"
     echo "  check   self-checks (no keys needed)"
     echo "  keys    check every key in .env against its provider"
