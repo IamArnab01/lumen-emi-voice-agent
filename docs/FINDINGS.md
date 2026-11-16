@@ -31,7 +31,15 @@ Real failures and surprises, in the order found. Feeds the eval report (P5).
 
 | # | What happened | Model | Change made | Status |
 |---|---|---|---|---|
-| F16 | family_member (eval trial): the agent said its goodbye ("I'll try calling her after six… have a nice day") but never called `record_outcome`; the mother hung up, so the call was `incomplete` and the callback time was lost. Callers hang up on a goodbye, so the outcome must be recorded before it. | gemini-2.5-flash | To fix in P5. | open |
+| F16 | family_member (eval trial): the agent said its goodbye ("I'll try calling her after six… have a nice day") but never called `record_outcome`; the mother hung up, so the call was `incomplete` and the callback time was lost. Callers hang up on a goodbye, so the outcome must be recorded before it. Baseline: 22/51 runs incomplete. | gemini-2.5-flash | Prompt: record first, then goodbye. Post-call fallback (`lumen/postcall.py`) derives the outcome from the transcript, marked `post_call`. | fixed: 0 incomplete; 50/51 recorded by the agent, 1 by the fallback |
+| F17 | The payment-link filler ("Just a second, it's going through.") went into the chat history, so the model answered it: "No problem, take your time." 7/51 runs. | gemini-2.5-flash | Filler spoken with `add_to_chat_ctx=False`. | fixed: 0/51 |
+| F18 | "Next Friday" (today Sat 14 Nov) turned into "Friday the twenty-first", and the agent argued with the borrower who said the 20th. 2 runs. | gemini-2.5-flash | Two-week calendar in the prompt; take the caller's correction. | fixed: 0 runs, promise date 18/18 |
+| F19 | B006 (prefers Hindi) spoke English; the agent stayed in Hindi, 20/20 lines. | gemini-2.5-flash | Open in the preferred language, then reply in the language of the caller's last turn. | fixed: 3/21 Hindi lines (the openings) |
+| F20 | `payment_link_sent: false` in records where the link was sent: the model calls `send_payment_link` and `record_outcome` in parallel, so the record was taken before the link finished. Found while checking the F16 fix. | gemini-2.5-flash | The saved record takes `payment_link_sent` from the call state at the end. | fixed |
+| F21 | Judge's most common worst moment: "What do you plan to do about this?" (14/18 runs in 6 scenarios). My own prompt and tool wording, repeated word for word. | gemini-2.5-flash | Ask gently ("Will you be able to make that payment by then?"). | fixed: 0/18; tone 4.39 → 4.83 |
+| F22 | 8/51 baseline runs crashed on LiveKit Inference's rate limit (429), and one later run died when WSL lost DNS mid-suite. | n/a | Eval parallelism 4 → 2; WSL restarted and suite rerun. | fixed |
+
+Before/after numbers: [REPORT.md](REPORT.md).
 
 ### Cascade latency, measured (voice bot, `happy` script, B001)
 

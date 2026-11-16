@@ -125,7 +125,11 @@ class LumenAgent(Agent):
                 {
                     "verified": True,
                     **loan_facts(s.borrower, s.today),
-                    "next": "Remind them of the EMI using the *_spoken fields, then ask what they plan to do.",
+                    "next": (
+                        "Remind them of the EMI using the *_spoken fields, then ask gently about payment, "
+                        "e.g. 'Will you be able to make that payment by then?' or, if overdue, "
+                        "'When do you think you'll be able to clear it?'. Never 'What do you plan to do about this?'."
+                    ),
                 },
                 ensure_ascii=False,
             )
