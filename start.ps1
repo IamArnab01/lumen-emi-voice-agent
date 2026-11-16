@@ -1,6 +1,7 @@
 # One entry point from Windows. Everything runs inside WSL Ubuntu, because Windows
 # Smart App Control blocks livekit's native libraries on this machine.
 #   .\start.ps1 app                      THE DEMO: agent + call page, http://localhost:8090
+#   .\start.ps1 evals [--runs 3] [--only id,id]   eval suite: LLM borrower, rule checks, LLM judge
 #   .\start.ps1 setup | check | keys | shell
 #   .\start.ps1 smoke [ultravox]          text-mode smoke test
 #   .\start.ps1 console [B001..B008]      talk to the agent with your laptop mic

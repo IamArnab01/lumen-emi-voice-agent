@@ -221,7 +221,10 @@ async def run(pipeline: str, script: str) -> dict:
 
     def _on_text(reader: rtc.TextStreamReader, identity: str) -> None:
         async def read() -> None:
-            text = await reader.read_all()
+            try:
+                text = await reader.read_all()
+            except rtc.data_stream.StreamError:  # stream cut off when the call hangs up
+                return
             if (reader.info.attributes or {}).get("lk.transcription_final") == "true" and text.strip():
                 heard.append({"who": identity, "text": text.strip()})
 

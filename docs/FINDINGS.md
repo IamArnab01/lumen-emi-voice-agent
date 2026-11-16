@@ -27,6 +27,12 @@ Real failures and surprises, in the order found. Feeds the eval report (P5).
 | F13 | Agent told the borrower "I'll mark this as paid on time" (nothing was paid; internal bookkeeping narrated, and wrong). | gemini-2.5-flash | Prompt: never describe record-keeping or tools to the caller. | fixed (prompt), unverified in voice |
 | F14 | Two end-of-turn waits hit `max_delay` (2.5 s): mid-sentence pauses ("Sure." … "It is the twelfth of March" … "nineteen ninety") left the turn detector unsure, so it waited the full cap. | cascade | `max_delay` 2.5 → 1.5 s; `min_delay` 0.4 → 0.25 s; VAD silence 0.4 → 0.3 s. | to re-measure |
 
+## 2026-11-16: P4 eval suite
+
+| # | What happened | Model | Change made | Status |
+|---|---|---|---|---|
+| F16 | family_member (eval trial): the agent said its goodbye ("I'll try calling her after six… have a nice day") but never called `record_outcome`; the mother hung up, so the call was `incomplete` and the callback time was lost. Callers hang up on a goodbye, so the outcome must be recorded before it. | gemini-2.5-flash | To fix in P5. | open |
+
 ### Cascade latency, measured (voice bot, `happy` script, B001)
 
 | Build | STT final | End of turn | LLM first token | TTS first audio | Reply, borrower side |
@@ -40,6 +46,15 @@ Real failures and surprises, in the order found. Feeds the eval report (P5).
 LLM choice by measurement (`evals/llm_ttft.py`, real prompt + tools, 5 runs each, median first token): gemini-2.5-flash 773 ms · gemini-2.5-flash-lite 949 ms · gpt-4o-mini 1202 ms · gpt-4.1-nano 1414 ms · gemini-3.1-flash-lite 1473 ms · gpt-4.1-mini 1810 ms.
 
 | F15 | Hindi call (B003) on Deepgram nova-3 `multi`: some Hindi fragments transcribed as Thai ("่า"), Telugu ("మీరు డేటా") and Indonesian ("bahasa terakhir"). The agent still got the right outcome (promise_to_pay 2026-12-10, hi-IN). | cascade | Candidates: use Sarvam STT for Hindi-preferred borrowers, or a language hint. | open |
+
+### Ultravox vs cascade, voice bot (same `happy` script; one run each, so variance is high)
+
+| Pipeline | Reply median | Reply p90 | Barge-in stop | Outcome |
+|---|---|---|---|---|
+| Ultravox (via LiveKit plugin) | 2.84 s | 6.25 s (payment-link turn) | 1.26 s | correct |
+| Cascade (Deepgram + gemini-2.5-flash + Sarvam TTS, tuned) | 2.34 s | 3.72 s | 0.89 s | correct |
+
+Ultravox through LiveKit was not faster than the tuned cascade here: the audio makes an extra hop (caller → LiveKit → our worker → Ultravox WebSocket). A browser connected straight to Ultravox would skip it. Free plan allows one such call per day, so these are single samples.
 
 ## Passing so far
 - Text mode, both smoke scenarios PASS on gpt-oss-120b, gpt-4.1-mini (after F8) and gemini-2.5-flash. No loan details leaked to the mother in any run.

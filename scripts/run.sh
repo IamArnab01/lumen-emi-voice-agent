@@ -65,11 +65,15 @@ case "${1:-help}" in
   agent) [ -n "${2:-}" ] && export BORROWER="$2"; py agent.py start ;;
   dev) [ -n "${2:-}" ] && export BORROWER="$2"; py agent.py dev ;;
   app) app ;;
+  evals) shift; py -m evals.run "$@" ;;
+  score) py -m evals.score "$2" ;;
   voicebot) voicebot "${2:-ultravox}" "${3:-happy}" ;;
   shell) exec bash --rcfile <(echo "source ~/.bashrc 2>/dev/null; source $VENV/bin/activate; cd $ROOT") -i ;;
   *)
     echo "usage: start.ps1 <command>"
     echo "  app     THE DEMO: agent + call page on http://localhost:8090 (Ctrl+C stops both)"
+    echo "  evals [--runs N] [--only id,id]  run the eval suite (LLM borrower), then score it"
+    echo "  score <results dir>  re-score a results folder"
     echo "  setup   create/update the WSL venv, install requirements, create .env"
     echo "  check   self-checks (no keys needed)"
     echo "  keys    check every key in .env against its provider"

@@ -50,11 +50,15 @@ class CallState:
     # Set by the voice entrypoint: hangs up once the goodbye has played.
     hang_up: Callable[[], None] | None = None
 
-    def finalize(self) -> dict:
-        """Save and return the call's outcome; a call that never got one is 'incomplete'."""
-        record = self.outcome or incomplete_outcome(
+    def record(self) -> dict:
+        """The call's outcome; a call that never got one is 'incomplete'."""
+        return self.outcome or incomplete_outcome(
             self.borrower, self.verified, self.payment_link_sent, self.call_id, self.end_reason
         )
+
+    def finalize(self) -> dict:
+        """Save (to outcomes.jsonl, shown on the call page) and return the outcome."""
+        record = self.record()
         save_outcome(record)
         return record
 
