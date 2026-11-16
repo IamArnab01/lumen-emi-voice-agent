@@ -1,0 +1,4 @@
+livekit-agents[ultravox,groq,sarvam,silero,turn-detector]~=1.8.12
+python-dotenv
+num2words
+pyyaml

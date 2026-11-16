@@ -1,0 +1,90 @@
+[
+  {
+    "id": "B001",
+    "name": "Rohan Mehta",
+    "dob": "1990-03-12",
+    "phone_last4": "4821",
+    "loan_type": "personal loan",
+    "emi_amount": 12500,
+    "due_date": "2026-11-17",
+    "language": "en-IN",
+    "_purpose": "happy path, upcoming EMI"
+  },
+  {
+    "id": "B002",
+    "name": "Priya Nair",
+    "dob": "1994-07-25",
+    "phone_last4": "3307",
+    "loan_type": "two-wheeler loan",
+    "emi_amount": 4850,
+    "due_date": "2026-11-02",
+    "language": "en-IN",
+    "_purpose": "overdue, promise to pay on a later date"
+  },
+  {
+    "id": "B003",
+    "name": "Suresh Kumar Yadav",
+    "dob": "1978-11-05",
+    "phone_last4": "9154",
+    "loan_type": "home loan",
+    "emi_amount": 125000,
+    "due_date": "2026-12-05",
+    "language": "hi-IN",
+    "_purpose": "lakh amount, Hindi preferred"
+  },
+  {
+    "id": "B004",
+    "name": "Anjali Verma",
+    "dob": "1988-01-30",
+    "phone_last4": "6672",
+    "loan_type": "consumer durable loan",
+    "emi_amount": 2999,
+    "due_date": "2026-10-20",
+    "language": "en-IN",
+    "_purpose": "financial hardship"
+  },
+  {
+    "id": "B005",
+    "name": "Vikram Singh",
+    "dob": "1985-09-18",
+    "phone_last4": "2045",
+    "loan_type": "personal loan",
+    "emi_amount": 18000,
+    "due_date": "2026-11-14",
+    "language": "en-IN",
+    "_purpose": "due today, disputes amount or says loan is not theirs"
+  },
+  {
+    "id": "B006",
+    "name": "Ramesh Patil",
+    "dob": "1972-04-02",
+    "phone_last4": "8810",
+    "loan_type": "gold loan",
+    "emi_amount": 7200,
+    "due_date": "2026-11-09",
+    "language": "hi-IN",
+    "_purpose": "irritated caller, Hindi-English code-mix"
+  },
+  {
+    "id": "B007",
+    "name": "Neha Gupta",
+    "dob": "1999-12-21",
+    "phone_last4": "5539",
+    "loan_type": "education loan",
+    "emi_amount": 9400,
+    "due_date": "2026-11-20",
+    "language": "en-IN",
+    "_purpose": "family member answers the phone"
+  },
+  {
+    "id": "B008",
+    "name": "Arjun Reddy",
+    "dob": "1983-06-14",
+    "phone_last4": "1276",
+    "loan_type": "business loan",
+    "emi_amount": 56300,
+    "due_date": "2026-11-12",
+    "language": "en-IN",
+    "_purpose": "asks for a callback; payment-link tool failure"
+  }
+]
