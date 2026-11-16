@@ -28,6 +28,21 @@ The call page lists the borrowers. "Call" starts the call: the agent joins a Liv
 speaks first, and you answer in the browser as the borrower (mic on). The live transcript and
 the saved outcome show on the same page. No phone numbers or telephony are involved.
 
+### Keys you need
+
+All have free tiers. Put them in `.env` (see `.env.example`).
+
+| To run | Keys |
+|---|---|
+| Evals, smoke test | LiveKit only (the LLMs go through LiveKit Inference) |
+| Call page, `PIPELINE=cascade` | LiveKit + Sarvam |
+| Call page, `PIPELINE=ultravox` | LiveKit + Ultravox |
+| Voice bot | LiveKit + Sarvam |
+
+- LiveKit Cloud: [cloud.livekit.io](https://cloud.livekit.io), create a project, then Settings → API keys (`LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`)
+- Ultravox: [app.ultravox.ai](https://app.ultravox.ai) → API keys. The free plan allows one call before it asks for a subscription.
+- Sarvam: [dashboard.sarvam.ai](https://dashboard.sarvam.ai) → API keys
+
 On Linux/macOS, run the same commands as `bash scripts/run.sh <command>`. `start.ps1` only
 forwards to that script inside WSL (Windows Smart App Control blocks livekit's native
 libraries on the machine this was built on).
